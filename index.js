@@ -7,6 +7,7 @@ const { PORT, MONGO_URL } = require("./config");
 const { signUpRouter } = require("./routes/signup");
 const { signInRouter } = require("./routes/signin");
 const { createRouter } = require("./routes/create");
+const { readRouter } = require("./routes/read");
 
 const app = express();
 app.use(express.json());
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use("/api", signUpRouter);
 app.use("/api", signInRouter);
 app.use("/api", createRouter);
+app.use("/api", readRouter);
 
 async function main() {
   try {

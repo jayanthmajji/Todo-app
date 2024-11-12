@@ -7,17 +7,11 @@ function auth(req, res, next) {
   const token = req.headers.authorization;
 
   try {
-    // verify the token
-
     const decodedData = jwt.verify(token, JWT_SECRET);
-
-    // get the userId
-    const userId = decodedData.id;
-
-    // calling the next function
+    req.userId = decodedData.id;
     next();
-  } catch (error) {
-    res.status(403).json({
+  } catch (e) {
+    res.json({
       message: "Invalid token!",
     });
   }
