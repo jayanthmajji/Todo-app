@@ -10,6 +10,7 @@ const { createRouter } = require("./routes/create");
 
 const app = express();
 app.use(express.json());
+
 app.use("/api", signUpRouter);
 app.use("/api", signInRouter);
 app.use("/api", createRouter);

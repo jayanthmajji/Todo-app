@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = "jayanthkumarmajji";
+const JWT_SECRET = require("./config");
 
 // create a auth function for user authentication
 
-function auth(req, res) {
+function auth(req, res, next) {
   const token = req.headers.authorization;
 
   try {
@@ -22,8 +22,4 @@ function auth(req, res) {
     });
   }
 }
-
-module.exports = {
-  auth,
-  JWT_SECRET,
-};
+module.exports = auth;
