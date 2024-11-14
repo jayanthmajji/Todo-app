@@ -5,6 +5,4 @@ const signInRouter = Router();
 
 signInRouter.post("/signin", signIn);
 
-module.exports = {
-  signInRouter: signInRouter,
-};
+module.exports = signInRouter;

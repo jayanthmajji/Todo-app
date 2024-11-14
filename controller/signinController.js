@@ -1,28 +1,47 @@
 const bcrypt = require("bcrypt");
-const zod = require("zod");
+const { userModel } = require("../model/db");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config");
-const { userModel } = require("../model/db");
 
 exports.signIn = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  // Find the user in the database by email
-  const user = await userModel.findOne({ email: email });
+    // check for the user
+    const response = await userModel.findOne({ email: email });
 
-  if (!user) {
-    return res.status(403).json({ message: "Invalid Credentials!" });
-  }
+    if (!response) {
+      return res.status(400).json({
+        message: "User not found!",
+      });
+    }
 
-  // Compare the provided password
-  const passwordMatch = await bcrypt.compare(password, user.password);
+    // password match and generating token
 
-  // If password matches, generate a JWT token and return it
-  if (passwordMatch) {
-    const token = jwt.sign({ id: user._id.toString() }, JWT_SECRET);
+    const passwordMatch = await bcrypt.compare(password, response.password);
 
-    res.json({ token, message: "You are signed in!" });
-  } else {
-    res.status(403).json({ message: "Invalid Credentials!" });
+    if (passwordMatch) {
+      const token = jwt.sign(
+        {
+          id: response._id.toString(),
+        },
+        JWT_SECRET
+      );
+      console.log("token---", token);
+
+      res.json({
+        message: "User has signed in!",
+        Token: token,
+      });
+    } else {
+      res.status(400).json({
+        message: "Invalid credentials!",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Signin failed",
+      error: error.message,
+    });
   }
 };

@@ -1,4 +1,3 @@
-const { Router } = require("express");
 const bcrypt = require("bcrypt");
 const zod = require("zod");
 const { userModel } = require("../model/db");
@@ -16,39 +15,44 @@ exports.signUp = async (req, res) => {
       ),
     name: zod.string().min(3).max(100),
   });
-  // parsing the data in the body
-  const parseDatawithSuccess = requireBody.safeParse(req.body);
+  // parsing the data to the body
+  const parseDataWithSuccess = requireBody.safeParse(req.body);
 
-  if (!parseDatawithSuccess.success) {
-    res.json({
+  // error in validation
+  if (!parseDataWithSuccess.success) {
+    res.status(403).json({
       message: "Incorrect format!",
-      error: parseDatawithSuccess.error,
+      error: parseDataWithSuccess.error,
     });
-    return;
   }
 
+  // get the email , name from the req body
   const { email, password, name } = req.body;
+
   // password hashing
 
-  let thrownError = false;
-  try {
-    const hashedPassword = await bcrypt.hash(password, 5);
-    console.log(hashedPassword);
+  let errorThrown = false;
 
+  try {
+    const passwordHashed = await bcrypt.hash(password, 5);
+    console.log(passwordHashed);
+
+    // create new user
     await userModel.create({
       email: email,
-      password: hashedPassword,
+      password: passwordHashed,
       name: name,
     });
   } catch (e) {
     res.json({
-      message: "User already exits!",
+      message: "User already exists!",
     });
-    thrownError = true;
+    errorThrown = true;
   }
-  if (!thrownError) {
-    res.json({
-      message: "user has signed up!",
+
+  if (!errorThrown) {
+    res.status(200).json({
+      message: "User has Signed Up!",
     });
   }
 };

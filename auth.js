@@ -1,18 +1,16 @@
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = require("./config");
-
-// create a auth function for user authentication
+const { JWT_SECRET } = require("./config");
 
 function auth(req, res, next) {
-  const token = req.headers.authorization;
+  const token = req.headers.token;
+  const decoded = jwt.verify(token, JWT_SECRET);
 
-  try {
-    const decodedData = jwt.verify(token, JWT_SECRET);
-    req.userId = decodedData.id;
+  if (decoded) {
+    req.userId = decoded.id;
     next();
-  } catch (e) {
+  } else {
     res.json({
-      message: "Invalid token!",
+      message: "You are not signed in!",
     });
   }
 }
